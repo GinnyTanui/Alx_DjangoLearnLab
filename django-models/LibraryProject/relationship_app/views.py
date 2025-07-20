@@ -8,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.contrib.auth.decorators import user_passes_test 
 from .models import UserProfile
+from django.contrib.auth.decorators import permission_required
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Book
 # Create your views here.
 def list_books(request):
     books = Book.objects.all()
