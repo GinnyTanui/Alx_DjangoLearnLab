@@ -1,23 +1,28 @@
 from django.shortcuts import render
 from .models import Author, Book  
-from rest_framework import viewsets, generics 
+from rest_framework import viewsets, generics,filters
 from .serializers import BookSerializer, AuthorSerializer 
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import ValidationError,  PermissionDenied
 from datetime import datetime 
-from django_filters.rest_framework import DjangoFilterBackend 
-from rest_framework import filters
+from rest_framework import generics, filters 
+from django_filters.rest_framework import DjangoFilterBackend
 
-# Create your views here.
 class ListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [AllowAny]  # Allow any user to access this view
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['title', 'author', 'publication_year']
-    search_fields = ['title', 'author'] 
-    ordering_fields = ['title', 'author', 'publication_year']
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
 
+    # Filtering fields
+    filterset_fields = ['title', 'author', 'publication_year']
+
+    # Searching fields
+    search_fields = ['title', 'author__name']  # assuming author has a name field
+
+    # Ordering fields
+    ordering_fields = ['title', 'publication_year']
+    ordering = ['title']  # default ordering
 class DetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
