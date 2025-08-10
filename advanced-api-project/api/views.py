@@ -5,17 +5,29 @@ from .serializers import BookSerializer, AuthorSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.exceptions import ValidationError,  PermissionDenied
 from datetime import datetime 
-from rest_framework import generics, filters 
+from rest_framework import generics, filters as drf_filters
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
+
+
+
+class BookFilter(filters.FilterSet):
+    title = filters.CharFilter(lookup_expr='icontains')
+    author = filters.CharFilter(lookup_expr='icontains')
+    publication_year = filters.NumberFilter(field_name='publication_date__year')
+
+    class Meta:
+        model = Book
+        fields = ['title', 'author', 'publication_year'] 
 
 class ListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [AllowAny]  # Allow any user to access this view
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, drf_filters.SearchFilter, drf_filters.OrderingFilter]
 
     # Filtering fields
-    filterset_fields = ['title', 'author', 'publication_year']
+    filterset_fields = [BookFilter]
 
     # Searching fields
     search_fields = ['title', 'author__name']  # assuming author has a name field
