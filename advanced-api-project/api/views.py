@@ -31,7 +31,7 @@ class DetailView(generics.RetrieveAPIView):
 class CreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can create books
+    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]  # Only authenticated users can create books
 
     def perform_create(self, serializer):
         if not self.request.user.is_staff:
@@ -49,7 +49,7 @@ class CreateView(generics.CreateAPIView):
 class UpdateView(generics.UpdateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [IsAuthenticated]  # Only authenticated users can update books  
+    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]  # Only authenticated users can update books  
 
     def perform_update(self, serializer):
        if "author" in serializer.validated_data:
