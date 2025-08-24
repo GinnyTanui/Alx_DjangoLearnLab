@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'accounts'
+    'accounts', 
+    'posts'
 ] 
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -134,3 +135,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',  # Secure by default
     ],
 }
+
+REST_FRAMEWORK.update({
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': [
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+})
