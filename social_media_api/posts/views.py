@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from .permissions import IsAuthorOrReadOnly
 from rest_framework.permissions import IsAuthenticated
@@ -20,6 +20,9 @@ class PostViewSet(viewsets.ModelViewSet):
     Ordering: ?ordering=created_at or -created_at (default global)
     """
     queryset = Post.objects.select_related('author').prefetch_related('comments')
+    def get_object(self, pk):
+        return generics.get_object_or_404(Post, pk=pk)
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     search_fields = ['title', 'content']
@@ -36,6 +39,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     Filter by post: ?post=<post_id>
     """
     queryset = Comment.objects.select_related('author', 'post')
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     search_fields = ['content']
